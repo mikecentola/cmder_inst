@@ -8,6 +8,14 @@ Cmder Installer is an install executable that will fetch the latest version of C
 ![Cmder Screenshot](http://i.imgur.com/g1nNf0I.png)
 
 
+## Languages
+
+Right now, Cmder Installer is only set up with English. We will be adding more languages in future releases.
+
+## Contributing
+
+For more information on contributing, please refer to our [CONTRIBUTING](https://github.com/mikecentola/cmder-inst/blob/master/CONTRIBUTING.md)
+
 ## License
 
 All software included is bundled with own license
