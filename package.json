@@ -1,0 +1,12 @@
+{
+    "name": "cmder_inst",
+    "version": "1.0.0",
+    "license": "MIT",
+    "scripts": {
+        "build": "node build.js"
+    },
+    "dependencies": {
+        "axios": "^0.18.0",
+        "makensis": "^0.12.6"
+    }
+}
