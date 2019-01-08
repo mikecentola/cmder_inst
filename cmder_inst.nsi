@@ -44,9 +44,8 @@
 ; General
 
     !define INSTALLER_VERSION "0.0.1-alpha"
-    !define CMDER_VERSION "1.3.0"
     !define APP_NAME "Cmder"
-    !define CMDER_DLURL "http://github.com/cmderdev/cmder/releases/download/v${CMDER_VERSION}/cmder_mini.zip"
+    !define CMDER_DLURL "http://github.com/cmderdev/cmder/releases/download/${CMDER_VERSION}/cmder_mini.zip"
     !define CMDER_URL "http://cmder.net"
 
     !define APP_INSTALLER_TEXT "${APP_NAME} Installer Ver. ${INSTALLER_VERSION}"
@@ -54,7 +53,7 @@
 
     ; Name / File
     Name "${APP_NAME} v${CMDER_VERSION}"
-    OutFile "cmder_inst_${INSTALLER_VERSION}.exe"
+    OutFile "cmder_inst_${CMDER_VERSION}.exe"
         
     ; Default Installation Folder
     InstallDir $PROGRAMFILES\${APP_NAME}
