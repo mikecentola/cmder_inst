@@ -1,6 +1,8 @@
 {
     "name": "cmder_inst",
-    "version": "1.0.0",
+    "version": "0.0.2-alpha",
+    "author": "Mike Centola",
+    "description": "Cmder Installer",
     "license": "MIT",
     "scripts": {
         "build": "node build.js"
