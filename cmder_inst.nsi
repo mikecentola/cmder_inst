@@ -5,7 +5,7 @@
 
 ; The MIT License (MIT)
 ;
-; Copyright (c) 2016 Mike Centola
+; Copyright (c) 2019 Mike Centola
 ;
 ; Permission is hereby granted, free of charge, to any person obtaining a copy
 ; of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,6 @@
 ;--------------------------------
 ; General
 
-    !define INSTALLER_VERSION "0.0.1-alpha"
     !define APP_NAME "Cmder"
     !define CMDER_DLURL "http://github.com/cmderdev/cmder/releases/download/${CMDER_VERSION}/cmder_mini.zip"
     !define CMDER_URL "http://cmder.net"
