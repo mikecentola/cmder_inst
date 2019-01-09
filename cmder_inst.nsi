@@ -1,4 +1,7 @@
 ; NSIS Installer File for Cmder
+;   VERSION:        v0.0.3-alpha
+;   CMDER VERSION:  v1.3.11
+;
 ;   Written by Mike Centola (http://github.com/mikecentola)
 ;
 ;   Intended for NSIS 3.0
@@ -31,6 +34,7 @@
     !include "MUI2.nsh"
     !include "FileFunc.nsh"
     !include "x64.nsh"
+    !include "winmessages.nsh"
 
 
 ;--------------------------------
@@ -44,6 +48,17 @@
 ; General
 
     !define APP_NAME "Cmder"
+
+    !ifndef INSTALLER_VERSION
+      ; Not run with nodejs
+      !define INSTALLER_VERSION "v0.0.3-alpha"
+    !endif
+
+    !ifndef CMDER_VERSION
+        ; Not run with nodejs
+        !define CMDER_VERSION "v1.3.11"
+    !endif
+
     !define CMDER_DLURL "http://github.com/cmderdev/cmder/releases/download/${CMDER_VERSION}/cmder_mini.zip"
     !define CMDER_URL "http://cmder.net"
 
@@ -51,8 +66,8 @@
     BrandingText "${APP_INSTALLER_TEXT}"
 
     ; Name / File
-    Name "${APP_NAME} v${CMDER_VERSION}"
-    OutFile "cmder_inst_${CMDER_VERSION}.exe"
+    Name "${APP_NAME} v${INSTALLER_VERSION}"
+    OutFile "cmder_inst_${INSTALLER_VERSION}.exe"
         
     ; Default Installation Folder
     InstallDir $PROGRAMFILES\${APP_NAME}
@@ -61,6 +76,8 @@
     !define REGLOC "Software\${APP_NAME}"
     !define REGROOT "HKLM"
     InstallDirRegKey ${REGROOT} "${REGLOC}" "InstallPath"
+    !define ENVHKLM 'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
+    !define ENVHKCU 'HKCU "Environment"'
 
     ; Uninstall Info
     !define ARP "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}"
@@ -233,6 +250,18 @@
         SectionEnd
     SectionGroupEnd
 
+    ; Environment Variables
+    SectionGroup /e "Environment Variables"
+        Section "CMDER_ROOT"
+            DetailPrint "Adding CMDER_ROOT Environment Variable"
+            WriteRegExpandStr ${ENVHKLM} "CMDER_ROOT" $INSTDIR
+            WriteRegExpandStr ${ENVHKCU} "CMDR_ROOT" $INSTDIR
+            SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment"
+
+        SectionEnd
+    SectionGroupEnd
+
+
     
 
 
@@ -272,6 +301,13 @@
         DeleteRegKey HKCR "Directory\Background\shell\${APP_NAME}"
         DeleteRegKey HKCR "Directory\shell\${APP_NAME}"
         DeleteRegKey ${REGROOT} "${ARP}" 
+
+        ; Remove Environment Variables
+        DetailPrint "Removing Environment Variables"
+        DeleteRegValue ${ENVHKLM} "CMDER_ROOT"
+        DeleteRegValue ${ENVHKCU} "CMDER_ROOT"
+        SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment"
+
 
     SectionEnd
 
