@@ -2,15 +2,42 @@
 
 Cmder Installer is an install executable that will fetch the latest version of Cmder online, un-pack it, and install it, using the Nullsoft Installer. It has several options including location to install to, windows explorer integration, and shorcuts.
 
+
 ## About Cmder
 [Cmder](http://Cmder.net) is a **software package** created out of pure frustration over absence of usable console emulator on Windows. It is based on [ConEmu](https://conemu.github.io/) with *major* config overhaul, comes with a Monokai color scheme, amazing [clink](https://github.com/mridgers/clink) (further enhanced by [clink-completions](https://github.com/vladimir-kotikov/clink-completions)) and a custom prompt layout.
 
 ![Cmder Screenshot](http://i.imgur.com/g1nNf0I.png)
 
+Current Cmder Release: *v1.3.11*
+
 
 ## Languages
 
 Right now, Cmder Installer is only set up with English. We will be adding more languages in future releases.
+
+## Building / Compiling
+
+### Prerequisites
+
+ - Download [NSIS](http://nsis.sourceforge.net)
+ - Required NSIS Plugins
+   - [inetc](https://nsis.sourceforge.io/Inetc_plug-in)
+   - [ZipDLL](https://nsis.sourceforge.io/ZipDLL_plug-in)
+
+ - If using nodejs to build
+   - Make sure that NSIS is properly installed with `makensis` in your PATH
+   - Install nodejs / npm
+  
+### Build Using NSIS Gui
+
+- Load cmder_inst.nsi into NSIS Gui Application and build
+
+### Build using NodeJS / NPM
+
+- `npm install`
+- `npm run build`
+
+
 
 ## Contributing
 
@@ -22,7 +49,7 @@ All software included is bundled with own license
 
 The MIT License (MIT)
 
-Copyright (c) 2016 Mike Centola
+Copyright (c) 2019 Mike Centola
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
