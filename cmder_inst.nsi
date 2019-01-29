@@ -78,11 +78,11 @@
     OutFile "cmder_inst_${INSTALLER_VERSION}.exe"
 
     ; Default Installation Folder
-    InstallDir $PROGRAMFILES\${APP_NAME}
+    InstallDir $LOCALAPPDATA\Programs\${APP_NAME}
 
     ; Registry Set Up
     !define REGLOC "Software\${APP_NAME}"
-    !define REGROOT "HKLM"
+    !define REGROOT "HKCU"
     InstallDirRegKey ${REGROOT} "${REGLOC}" "InstallPath"
 
     ; Uninstall Info
@@ -96,6 +96,7 @@
     ; File Properties
     VIAddVersionKey "FileVersion" "${FILE_VERSION}"
     VIAddVersionKey "LegalCopyright" "Copyright (c) 2019 Mike Centola"
+    VIAddVersionKey "CompanyName" "Applied Eng & Design"
     VIAddVersionKey "FileDescription" "${APP_NAME} Installer"
     VIAddVersionKey "ProductName" "${APP_NAME} Installer"
     VIAddVersionKey "ProductVersion" "${FILE_VERSION}"
@@ -105,6 +106,7 @@
 ; Interface Configuration
 
     !define MUI_WELCOMEFINISHPAGE_BITMAP "img\cmder-side.bmp"
+    !define MUI_UNWELCOMEFINISHPAGE_BITMAP "img\cmder-side.bmp"
     !define MUI_ICON "img\cmder.ico"
     !define MUI_UNICON "img\cmder.ico"
 
@@ -123,9 +125,8 @@
     !define MUI_FINISHPAGE_TITLE "Congratulations! You have installed Cmder."
     !define MUI_FINISHPAGE_TITLE_3LINES
     !define MUI_FINISHPAGE_TEXT "You can now use Cmder. Start menu and/or desktop shortcuts have been created \
-        if you chose to do so.$\r$\n$\r$\nPLEASE NOTE THAT YOU MUST EITHER RUN CMDER WITH THE CHECKBOX BELOW, \ 
-        OR RUN AS ADMINISTRATOR FOR THE FIRST TIME."
-    !define MUI_FINISHPAGE_RUN_TEXT "Run ${APP_NAME} ${CMDER_VERSION}"
+        if you chose to do so.$\r$\n$\r$\n"
+    !define MUI_FINISHPAGE_RUN_TEXT "Run ${APP_NAME}"
     !define MUI_FINISHPAGE_RUN "$INSTDIR\${APP_NAME}.exe"
 
     !define MUI_FINISHPAGE_NOREBOOTSUPPORT
@@ -143,10 +144,8 @@
 ; Pages
 
     ; Installer Pages
-    !define MUI_PAGE_CUSTOMFUNCTION_PRE wel_pre
     !insertmacro MUI_PAGE_WELCOME
     !insertmacro MUI_PAGE_LICENSE LICENSE
-    !define MUI_PAGE_CUSTOMFUNCTION_PRE dir_pre
     !insertmacro MUI_PAGE_DIRECTORY
     !insertmacro MUI_PAGE_COMPONENTS
     !insertmacro MUI_PAGE_INSTFILES
@@ -154,7 +153,6 @@
 
     ; Uninstaller Pages
     !insertmacro MUI_UNPAGE_CONFIRM
-    !define MUI_PAGE_CUSTOMFUNCTION_PRE un.dir_pre
     !insertmacro MUI_UNPAGE_INSTFILES
     !insertmacro MUI_UNPAGE_FINISH
 
@@ -170,8 +168,16 @@
 ;--------------------------------
 ; Installer Sections
 
-    Section "!Cmder ${CMDER_VERSION}" CmderInst
+    Section "!Cmder" CmderInst
         SectionIn 1 RO
+
+        ${If} ${RunningX64}
+            DetailPrint "Installer running on 64-bit host"
+
+            ; Disable registry redirection
+            SetRegView 64
+
+        ${EndIf}
 
         SetOutPath  "$INSTDIR"
         DetailPrint "Setting InstallDir: $INSTDIR"
@@ -236,7 +242,6 @@
     ; Shortcuts
     SectionGroup /e "Shortcuts"
         Section "Start Menu"
-            SetShellVarContext all
             DetailPrint "Writing StartMenu Shortcut"
             ; Start Menu item
             CreateShortCut "$SMPROGRAMS\${APP_NAME}.lnk" "$INSTDIR\${APP_NAME}.exe" "" "$INSTDIR\icons\${APP_NAME}.ico" 0
@@ -245,7 +250,6 @@
 
         Section /o "Create Desktop Icon"
             ;Create Desktop Shortcut
-            SetShellVarContext all
             DetailPrint "Writing Desktop Shorcut"
             SetOutPath $INSTDIR
             SetOverwrite on
@@ -299,9 +303,16 @@
 
 
     Section "Uninstall"
-    
+        ; x64 Setup
+        ${If} ${RunningX64}
+            DetailPrint "Installer running on 64-bit host"
+
+            ; Disable registry redirection
+            SetRegView 64
+
+        ${EndIf}
+        
         ; Remove Start Menu Items
-        SetShellVarContext current
         DetailPrint "Removing StartMenu Item"
         Delete "$SMPROGRAMS\${APP_NAME}.lnk"
            
@@ -315,14 +326,12 @@
         rmDir /r "$INSTDIR\config"
         rmDir /r "$INSTDIR\icons"
         rmDir /r "$INSTDIR\vendor"
-        Delete "$INSTDIR\${APP_NAME}.exe"
-        Delete "$INSTDIR\LICENSE"
-        Delete "$INSTDIR\README.md"
+        Delete "$INSTDIR\*.*"
         Delete "$INSTDIR\Uninstall.exe"
 
         ; Try to Remove Install Dir
         DetailPrint "Removing Installation Folder"
-        rmDir /r "$INSTDIR"
+        rmDir "$INSTDIR"
 
         ; Remove Registry Keys
         DetailPrint "Removing Registry Keys"
@@ -374,42 +383,6 @@
 
         Pop $0   
 
-    FunctionEnd
-
-
-    ; Welcome function
-    Function wel_pre
-        messagebox MB_OK|MB_ICONEXCLAMATION|MB_TOPMOST|MB_SETFOREGROUND "NOTE: Please remember to run Cmder \
-        from the final installation page OR run as administrator the first time."
-    FunctionEnd
-
-
-    ; dir_pre function
-    Function dir_pre
-        ; x64 Setup
-        ${If} ${RunningX64}
-            DetailPrint "Installer running on 64-bit host"
-
-            ; Disable registry redirection
-            SetRegView 64
-
-            ; Set Install Dir Root
-            StrCpy $INSTDIR "$PROGRAMFILES64\${APP_NAME}"
-        ${EndIf}
-    FunctionEnd
-
-    ; Uninstall dir_pre function
-    Function un.dir_pre
-        ; x64 Setup
-        ${If} ${RunningX64}
-            DetailPrint "Installer running on 64-bit host"
-
-            ; Disable registry redirection
-            SetRegView 64
-
-            ; Set Install Dir Root
-            StrCpy $INSTDIR "$PROGRAMFILES64\${APP_NAME}"
-        ${EndIf}
     FunctionEnd
 
 
