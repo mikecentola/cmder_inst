@@ -1,3 +1,5 @@
+[![](https://img.shields.io/github/license/mikecentola/cmder_inst.svg)](https://github.com/mikecentola/cmder_inst/blob/master/LICENSE) ![](https://img.shields.io/github/release/mikecentola/cmder_inst.svg) ![](https://img.shields.io/github/tag-date/mikecentola/cmder_inst.svg)
+
 # Cmder Installer
 
 Cmder Installer is an install executable that will fetch the latest version of Cmder online, un-pack it, and install it, using the Nullsoft Installer. It has several options including location to install to, windows explorer integration, and shorcuts.
@@ -7,8 +9,6 @@ Cmder Installer is an install executable that will fetch the latest version of C
 [Cmder](http://Cmder.net) is a **software package** created out of pure frustration over absence of usable console emulator on Windows. It is based on [ConEmu](https://conemu.github.io/) with *major* config overhaul, comes with a Monokai color scheme, amazing [clink](https://github.com/mridgers/clink) (further enhanced by [clink-completions](https://github.com/vladimir-kotikov/clink-completions)) and a custom prompt layout.
 
 ![Cmder Screenshot](http://i.imgur.com/g1nNf0I.png)
-
-Current Cmder Release: *v1.3.11*
 
 
 ## Languages
@@ -23,6 +23,8 @@ Right now, Cmder Installer is only set up with English. We will be adding more l
  - Required NSIS Plugins
    - [inetc](https://nsis.sourceforge.io/Inetc_plug-in)
    - [ZipDLL](https://nsis.sourceforge.io/ZipDLL_plug-in)
+   - [EnVar](https://nsis.sourceforge.io/EnVar_plug-in)
+   - [NsJSON](https://nsis.sourceforge.io/NsJSON_plug-in)
 
  - If using nodejs to build
    - Make sure that NSIS is properly installed with `makensis` in your PATH
