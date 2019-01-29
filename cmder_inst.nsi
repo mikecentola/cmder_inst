@@ -261,12 +261,12 @@
         Section 'Add "Open Cmder Here"'
             DetailPrint "Adding Explorer Integrations"
             WriteRegStr HKCR "Directory\Background\shell\${APP_NAME}" "" "Open Cmder Here"
-            WriteRegStr HKCR "Directory\Background\shell\${APP_NAME}" "Icon" "$INSTDIR\icons\cmder.ico"
-            WriteRegStr HKCR "Directory\Background\shell\${APP_NAME}\command" "" '"$INSTDIR\${APP_NAME}.exe" "%V"'
+            WriteRegStr HKCR "Directory\Background\shell\${APP_NAME}" "Icon" "%CMDER_ROOT%\icons\cmder.ico"
+            WriteRegStr HKCR "Directory\Background\shell\${APP_NAME}\command" "" '"%CMDER_ROOT%\${APP_NAME}.exe" "%v"'
 
             WriteRegStr HKCR "Directory\shell\${APP_NAME}" "" "Open Cmder Here"
-            WriteRegStr HKCR "Directory\shell\${APP_NAME}" "Icon" "$INSTDIR\icons\cmder.ico"
-            WriteRegStr HKCR "Directory\shell\${APP_NAME}\command" "" '"$INSTDIR\${APP_NAME}.exe" "%1"'
+            WriteRegStr HKCR "Directory\shell\${APP_NAME}" "Icon" "%CMDER_ROOT\icons\cmder.ico"
+            WriteRegStr HKCR "Directory\shell\${APP_NAME}\command" "" '"%CMDER_ROOT%\${APP_NAME}.exe" "%1"'
         
         SectionEnd
     SectionGroupEnd
