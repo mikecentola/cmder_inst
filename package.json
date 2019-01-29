@@ -1,6 +1,6 @@
 {
     "name": "cmder_inst",
-    "version": "0.0.3-alpha",
+    "version": "0.1.0",
     "author": "Mike Centola",
     "description": "Cmder Installer",
     "keywords": "cmder,installer,nsis,nullsoft,windows",
