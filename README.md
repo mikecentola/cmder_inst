@@ -1,4 +1,5 @@
-[![](https://img.shields.io/github/license/mikecentola/cmder_inst.svg)](https://github.com/mikecentola/cmder_inst/blob/master/LICENSE) ![](https://img.shields.io/github/release/mikecentola/cmder_inst.svg) ![](https://img.shields.io/github/tag-date/mikecentola/cmder_inst.svg)
+[![](https://img.shields.io/github/license/mikecentola/cmder_inst.svg)](https://github.com/mikecentola/cmder_inst/blob/master/LICENSE) ![](https://img.shields.io/github/release/mikecentola/cmder_inst.svg) ![Gihub Stars](https://badgen.net/github/stars/mikecentola/cmder_inst)
+[![GitHub](https://badgen.net/github/issues/mikecentola/cmder_inst)](https://github.com/appliedengdesign/vscode-gcode-syntax)
 
 # Cmder Installer
 
@@ -19,16 +20,16 @@ Right now, Cmder Installer is only set up with English. We will be adding more l
 
 ### Prerequisites
 
- - Download [NSIS](http://nsis.sourceforge.net)
- - Required NSIS Plugins
-   - [inetc](https://nsis.sourceforge.io/Inetc_plug-in)
-   - [ZipDLL](https://nsis.sourceforge.io/ZipDLL_plug-in)
-   - [EnVar](https://nsis.sourceforge.io/EnVar_plug-in)
-   - [NsJSON](https://nsis.sourceforge.io/NsJSON_plug-in)
+- Download [NSIS](http://nsis.sourceforge.net)
+- Required NSIS Plugins
+  - [inetc](https://nsis.sourceforge.io/Inetc_plug-in)
+  - [ZipDLL](https://nsis.sourceforge.io/ZipDLL_plug-in)
+  - [EnVar](https://nsis.sourceforge.io/EnVar_plug-in)
+  - [NsJSON](https://nsis.sourceforge.io/NsJSON_plug-in)
 
- - If using nodejs to build
-   - Make sure that NSIS is properly installed with `makensis` in your PATH
-   - Install nodejs / npm
+- If using nodejs to build
+  - Make sure that NSIS is properly installed with `makensis` in your PATH
+  - Install nodejs / npm
   
 ### Build Using NSIS Gui
 
