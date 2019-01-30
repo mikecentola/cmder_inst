@@ -53,10 +53,6 @@
       !define INSTALLER_VERSION "v0.1.0"
     !endif
 
-    !ifndef CMDER_VERSION
-        ; Not run with nodejs
-        !define CMDER_VERSION "v1.3.11"
-    !endif
 
     !ifndef FILE_VERSION
       !define FILE_VERSION "0.1.0.0"

@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "author": "Mike Centola",
     "description": "Cmder Installer",
-    "keywords": "cmder,installer,nsis,nullsoft,windows",
+    "keywords": ["cmder","installer","nsis","conemu","nullsoft","windows"],
     "homepage": "https://github.com/mikecentola/cmder_inst",
     "bugs": "https://github.com/mikecentola/cmder_inst/issues",
     "license": "MIT",
