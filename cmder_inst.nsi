@@ -287,7 +287,20 @@
                     DetailPrint "Success."
                     ${Break}
                 ${Case} 4
-                    DetailPrint "Error writing Environment Variable."
+                    DetailPrint "Error writing Environment Variable..."
+                    MessageBox MB_OK "Error writing Environment Variable, Please add manually after Install."
+                    ${Break}
+            ${EndSwitch}
+            
+            DetailPrint "Adding ConEmuDir Environment Variable..."
+            EnVar::AddValue "ConEmuDir" "$INSTDIR\vendor\conemu-maximus5"
+            Pop $0
+            ${Switch} $0
+                ${Case} 0
+                    DetailPrint "Success."
+                    ${Break}
+                ${Case} 4
+                    DetailPrint "Error writing Environment Variable..."
                     MessageBox MB_OK "Error writing Environment Variable, Please add manually after Install."
                     ${Break}
             ${EndSwitch}
