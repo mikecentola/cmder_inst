@@ -1,9 +1,16 @@
 {
     "name": "cmder_inst",
-    "version": "0.0.2-alpha",
+    "version": "0.1.0",
     "author": "Mike Centola",
     "description": "Cmder Installer",
+    "keywords": ["cmder","installer","nsis","conemu","nullsoft","windows"],
+    "homepage": "https://github.com/mikecentola/cmder_inst",
+    "bugs": "https://github.com/mikecentola/cmder_inst/issues",
     "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/mikecentola/cmder_inst/issues"
+    },
     "scripts": {
         "build": "node build.js"
     },

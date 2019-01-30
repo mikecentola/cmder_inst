@@ -1,4 +1,6 @@
 ; NSIS Installer File for Cmder
+;   VERSION:        v0.1.0
+;
 ;   Written by Mike Centola (http://github.com/mikecentola)
 ;
 ;   Intended for NSIS 3.0
@@ -31,10 +33,11 @@
     !include "MUI2.nsh"
     !include "FileFunc.nsh"
     !include "x64.nsh"
+    !include "winmessages.nsh"
 
 
 ;--------------------------------
-; UAC
+; Access Context
 
     ; Request application privileges
     RequestExecutionLevel admin
@@ -44,22 +47,38 @@
 ; General
 
     !define APP_NAME "Cmder"
-    !define CMDER_DLURL "http://github.com/cmderdev/cmder/releases/download/${CMDER_VERSION}/cmder_mini.zip"
+
+    !ifndef INSTALLER_VERSION
+      ; Not run with nodejs
+      !define INSTALLER_VERSION "v0.1.0"
+    !endif
+
+
+    !ifndef FILE_VERSION
+      !define FILE_VERSION "0.1.0.0"
+    !endif
+
+    !define CMDER_LATEST "https://api.github.com/repos/cmderdev/cmder/releases/latest"
     !define CMDER_URL "http://cmder.net"
 
-    !define APP_INSTALLER_TEXT "${APP_NAME} Installer Ver. ${INSTALLER_VERSION}"
+    ; Temporary Files
+    !define TMP_GHJSON "$PLUGINSDIR/${APP_NAME}_GitHub.json"
+    !define TMP_CMDERPACKAGE "$PLUGINSDIR/${APP_NAME}.zip"
+
+
+    !define APP_INSTALLER_TEXT "${APP_NAME} Installer ${INSTALLER_VERSION}"
     BrandingText "${APP_INSTALLER_TEXT}"
 
     ; Name / File
-    Name "${APP_NAME} v${CMDER_VERSION}"
-    OutFile "cmder_inst_${CMDER_VERSION}.exe"
-        
+    Name "${APP_NAME}"
+    OutFile "cmder_inst_${INSTALLER_VERSION}.exe"
+
     ; Default Installation Folder
-    InstallDir $PROGRAMFILES\${APP_NAME}
+    InstallDir $LOCALAPPDATA\Programs\${APP_NAME}
 
     ; Registry Set Up
     !define REGLOC "Software\${APP_NAME}"
-    !define REGROOT "HKLM"
+    !define REGROOT "HKCU"
     InstallDirRegKey ${REGROOT} "${REGLOC}" "InstallPath"
 
     ; Uninstall Info
@@ -70,15 +89,24 @@
     ShowUninstDetails show
     SpaceTexts none
 
+    ; File Properties
+    VIAddVersionKey "FileVersion" "${FILE_VERSION}"
+    VIAddVersionKey "LegalCopyright" "Copyright (c) 2019 Mike Centola"
+    VIAddVersionKey "CompanyName" "Applied Eng & Design"
+    VIAddVersionKey "FileDescription" "${APP_NAME} Installer"
+    VIAddVersionKey "ProductName" "${APP_NAME} Installer"
+    VIAddVersionKey "ProductVersion" "${FILE_VERSION}"
+    VIProductVersion "${FILE_VERSION}"
 
 ;--------------------------------
 ; Interface Configuration
 
     !define MUI_WELCOMEFINISHPAGE_BITMAP "img\cmder-side.bmp"
+    !define MUI_UNWELCOMEFINISHPAGE_BITMAP "img\cmder-side.bmp"
     !define MUI_ICON "img\cmder.ico"
     !define MUI_UNICON "img\cmder.ico"
 
-    !define MUI_WELCOMEPAGE_TITLE "Welcome to the ${APP_NAME} v${CMDER_VERSION} Installation Tool for Windows."
+    !define MUI_WELCOMEPAGE_TITLE "Welcome to the ${APP_NAME} Installation Tool for Windows."
     !define MUI_WELCOMEPAGE_TITLE_3LINES
     !define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation the latest version of Cmder \
     for Windows.$\r$\n$\r$\nClick Next to continue."
@@ -93,19 +121,18 @@
     !define MUI_FINISHPAGE_TITLE "Congratulations! You have installed Cmder."
     !define MUI_FINISHPAGE_TITLE_3LINES
     !define MUI_FINISHPAGE_TEXT "You can now use Cmder. Start menu and/or desktop shortcuts have been created \
-        if you chose to do so.$\r$\n$\r$\nPLEASE NOTE THAT YOU MUST EITHER RUN CMDER WITH THE CHECKBOX BELOW, \ 
-        OR RUN AS ADMINISTRATOR FOR THE FIRST TIME."
-    !define MUI_FINISHPAGE_RUN_TEXT "Run ${APP_NAME} v${CMDER_VERSION}"
+        if you chose to do so.$\r$\n$\r$\n"
+    !define MUI_FINISHPAGE_RUN_TEXT "Run ${APP_NAME}"
     !define MUI_FINISHPAGE_RUN "$INSTDIR\${APP_NAME}.exe"
 
     !define MUI_FINISHPAGE_NOREBOOTSUPPORT
 
     !define MUI_ABORTWARNING
-    !define MUI_ABORTWARNING_TEXT "Are you sure you want to cancel the installation of ${APP_NAME} v${CMDER_VERSION}?"
+    !define MUI_ABORTWARNING_TEXT "Are you sure you want to cancel the installation of ${APP_NAME}?"
     !define MUI_ABORTWARNING_CANCEL_DEFAULT
 
     !define MUI_UNCONFIRMPAGE_TEXT_TOP "This wizard will guide you through the uninstallation of ${APP_NAME} \
-        v${CMDER_VERSION}.$\r$\n$\r$\nBefore starting the uninstallation, please make sure that ${APP_NAME} \
+        .$\r$\n$\r$\nBefore starting the uninstallation, please make sure that ${APP_NAME} \
         is not running.$\r$\n$\r$\nClick Next to continue."
     !define MUI_UNFINISHPAGE_NOAUTOCLOSE
 
@@ -113,10 +140,8 @@
 ; Pages
 
     ; Installer Pages
-    !define MUI_PAGE_CUSTOMFUNCTION_PRE wel_pre
     !insertmacro MUI_PAGE_WELCOME
     !insertmacro MUI_PAGE_LICENSE LICENSE
-    !define MUI_PAGE_CUSTOMFUNCTION_PRE dir_pre
     !insertmacro MUI_PAGE_DIRECTORY
     !insertmacro MUI_PAGE_COMPONENTS
     !insertmacro MUI_PAGE_INSTFILES
@@ -124,7 +149,6 @@
 
     ; Uninstaller Pages
     !insertmacro MUI_UNPAGE_CONFIRM
-    !define MUI_PAGE_CUSTOMFUNCTION_PRE un.dir_pre
     !insertmacro MUI_UNPAGE_INSTFILES
     !insertmacro MUI_UNPAGE_FINISH
 
@@ -140,15 +164,27 @@
 ;--------------------------------
 ; Installer Sections
 
-    Section "!Cmder ${CMDER_VERSION}" CmderInst
+    Section "!Cmder" CmderInst
         SectionIn 1 RO
+
+        ${If} ${RunningX64}
+            DetailPrint "Installer running on 64-bit host"
+
+            ; Disable registry redirection
+            SetRegView 64
+
+        ${EndIf}
 
         SetOutPath  "$INSTDIR"
         DetailPrint "Setting InstallDir: $INSTDIR"
 
         ; ADD FILES
-        DetailPrint "Downloading latest Cmder (mini) from ${CMDER_DLURL}"
-        inetc::get ${CMDER_DLURL} $TEMP/cmder_mini.zip
+        DetailPrint "Downloading latest Cmder (mini)..."
+        Var /GLOBAL cmder_dl
+        Var /GLOBAL cmder_version
+        Call getLatestRelease
+        DetailPrint "Attempting to fetch latest cmder installer..."
+        inetc::get $cmder_dl ${TMP_CMDERPACKAGE}
         Pop $0
         StrCmp "$0" "OK" dlok
         DetailPrint "Download Failed $0"
@@ -156,7 +192,7 @@
 
         dlok:
         DetailPrint "Download OK"
-        !insertmacro ZIPDLL_EXTRACT "$TEMP/cmder_mini.zip" "$INSTDIR" "<ALL>"
+        !insertmacro ZIPDLL_EXTRACT "${TMP_CMDERPACKAGE}" "$INSTDIR" "<ALL>"
         Pop $0
         DetailPrint "Unzipping Files"
         StrCmp "$0" "success" unzipok
@@ -166,16 +202,14 @@
 
         unzipok:
         DetailPrint "Unzip OK"
-        ; Delete Zip
-        DetailPrint "Removing Temp File"
-        delete $TEMP/cmder_mini.zip
 
         DetailPrint "Writing Registry Keys"
         ; Store Installation Folder
         WriteRegStr ${REGROOT} "${REGLOC}" "InstallPath" $INSTDIR
-        WriteRegStr ${REGROOT} "${REGLOC}" "Version" ${CMDER_VERSION}
+        WriteRegStr ${REGROOT} "${REGLOC}" "Version" $cmder_version
 
         ; Create Uninstaller
+        DetailPrint "Creating Uninstaller"
         WriteUninstaller "$INSTDIR\Uninstall.exe"
 
         ; Write Uninstaller Registry Keys
@@ -184,7 +218,7 @@
         WriteRegExpandStr ${REGROOT} "${ARP}" "QuietUninstallString" "$INSTDIR\uninstall.exe /S"
         WriteRegExpandStr ${REGROOT} "${ARP}" "InstallLocation" "$INSTDIR"
         WriteRegStr ${REGROOT} "${ARP}" "DisplayIcon" "$INSTDIR\icons\${APP_NAME}.ico"
-        WriteRegStr ${REGROOT} "${ARP}" "DisplayVersion" "${CMDER_VERSION}"
+        WriteRegStr ${REGROOT} "${ARP}" "DisplayVersion" "$cmder_version"
         WriteRegStr ${REGROOT} "${ARP}" "URLInfoAbout" "${CMDER_URL}"
         WriteRegStr ${REGROOT} "${ARP}" "NoModify" 1
         WriteRegStr ${REGROOT} "${ARP}" "NoRepair" 1
@@ -193,6 +227,11 @@
         ${GetSize} "$INSTDIR" "/S=OK" $0 $1 $2
         IntFmt $0 "0x%08X" $0
         WriteRegDWORD ${REGROOT} "${ARP}" "EstimatedSize" "$0"
+
+        ; Remove Temporary Files
+        DetailPrint "Removing Temporary Files"
+        Delete "${TMP_CMDERPACKAGE}"
+        Delete "${TMP_GHJSON}"
 
     SectionEnd
 
@@ -209,7 +248,6 @@
             ;Create Desktop Shortcut
             DetailPrint "Writing Desktop Shorcut"
             SetOutPath $INSTDIR
-            SetShellVarContext all
             SetOverwrite on
                CreateShortCut "$DESKTOP\${APP_NAME}.lnk" "$INSTDIR\${APP_NAME}.exe" "" "$INSTDIR\icons\${APP_NAME}.ico" 0
             SetOverwrite off
@@ -223,15 +261,48 @@
         Section 'Add "Open Cmder Here"'
             DetailPrint "Adding Explorer Integrations"
             WriteRegStr HKCR "Directory\Background\shell\${APP_NAME}" "" "Open Cmder Here"
-            WriteRegStr HKCR "Directory\Background\shell\${APP_NAME}" "Icon" "$INSTDIR\icons\cmder.ico"
-            WriteRegStr HKCR "Directory\Background\shell\${APP_NAME}\command" "" '"$INSTDIR\${APP_NAME}.exe" "%V"'
+            WriteRegStr HKCR "Directory\Background\shell\${APP_NAME}" "Icon" "%CMDER_ROOT%\icons\cmder.ico"
+            WriteRegStr HKCR "Directory\Background\shell\${APP_NAME}\command" "" '"%CMDER_ROOT%\${APP_NAME}.exe" "%v"'
 
             WriteRegStr HKCR "Directory\shell\${APP_NAME}" "" "Open Cmder Here"
-            WriteRegStr HKCR "Directory\shell\${APP_NAME}" "Icon" "$INSTDIR\icons\cmder.ico"
-            WriteRegStr HKCR "Directory\shell\${APP_NAME}\command" "" '"$INSTDIR\${APP_NAME}.exe" "%1"'
+            WriteRegStr HKCR "Directory\shell\${APP_NAME}" "Icon" "%CMDER_ROOT\icons\cmder.ico"
+            WriteRegStr HKCR "Directory\shell\${APP_NAME}\command" "" '"%CMDER_ROOT%\${APP_NAME}.exe" "%1"'
         
         SectionEnd
     SectionGroupEnd
+
+    ; Environment Variables
+    SectionGroup /e "Environment Variables"
+        Section "CMDER_ROOT"
+            DetailPrint "Adding CMDER_ROOT Environment Variable"
+            EnVar::SetHKCU
+            EnVar::AddValue "CMDER_ROOT" "$INSTDIR"
+            Pop $0
+            ${Switch} $0
+                ${Case} 0
+                    DetailPrint "Success."
+                    ${Break}
+                ${Case} 4
+                    DetailPrint "Error writing Environment Variable..."
+                    MessageBox MB_OK "Error writing Environment Variable, Please add manually after Install."
+                    ${Break}
+            ${EndSwitch}
+            
+            DetailPrint "Adding ConEmuDir Environment Variable..."
+            EnVar::AddValue "ConEmuDir" "$INSTDIR\vendor\conemu-maximus5"
+            Pop $0
+            ${Switch} $0
+                ${Case} 0
+                    DetailPrint "Success."
+                    ${Break}
+                ${Case} 4
+                    DetailPrint "Error writing Environment Variable..."
+                    MessageBox MB_OK "Error writing Environment Variable, Please add manually after Install."
+                    ${Break}
+            ${EndSwitch}
+        SectionEnd
+    SectionGroupEnd
+
 
     
 
@@ -239,16 +310,24 @@
 ;--------------------------------
 ; Uninstaller Section
 
+
     Section "Uninstall"
-    
+        ; x64 Setup
+        ${If} ${RunningX64}
+            DetailPrint "Installer running on 64-bit host"
+
+            ; Disable registry redirection
+            SetRegView 64
+
+        ${EndIf}
+        
         ; Remove Start Menu Items
-        SetShellVarContext all
         DetailPrint "Removing StartMenu Item"
-        delete "$SMPROGRAMS\${APP_NAME}.lnk"
+        Delete "$SMPROGRAMS\${APP_NAME}.lnk"
            
         ; Remove Desktop Link
         DetailPrint "Removing Desktop Shortcut"
-        delete $DESKTOP\${APP_NAME}.lnk
+        Delete "$DESKTOP\${APP_NAME}.lnk"
 
         ; Remove Files
         DetailPrint "Removing Files"
@@ -256,15 +335,12 @@
         rmDir /r "$INSTDIR\config"
         rmDir /r "$INSTDIR\icons"
         rmDir /r "$INSTDIR\vendor"
-        delete "$INSTDIR\${APP_NAME}.exe"
-        delete "$INSTDIR\CHANGELOG.md"
-        delete "$INSTDIR\CONTRIBUTING.md"
-        delete "$INSTDIR\README.md"
-        delete "$INSTDIR\Version v${CMDER_VERSION}"
-        delete "$INSTDIR\Uninstall.exe"
+        Delete "$INSTDIR\*.*"
+        Delete "$INSTDIR\Uninstall.exe"
 
         ; Try to Remove Install Dir
-        rmDir $INSTDIR
+        DetailPrint "Removing Installation Folder"
+        rmDir "$INSTDIR"
 
         ; Remove Registry Keys
         DetailPrint "Removing Registry Keys"
@@ -273,56 +349,100 @@
         DeleteRegKey HKCR "Directory\shell\${APP_NAME}"
         DeleteRegKey ${REGROOT} "${ARP}" 
 
+        ; Remove Environment Variables
+        DetailPrint "Removing Environment Variables"
+        EnVar::SetHKCU
+        EnVar::Check "CMDER_ROOT" "NULL"
+        Pop $0
+        ${Switch} $0
+            ${Case} 0
+                DetailPrint "Found CMDER_ROOT... Removing..."
+                EnVar::Delete "CMDER_ROOT"
+                Pop $1
+                ${Switch} $1
+                    ${Case} 0
+                        DetailPrint "Success."
+                        ${Break}
+                    ${Case} 4
+                        DetailPrint "Could not remove Environment Variable"
+                        ${Break}
+                ${EndSwitch}
+                ${Break}
+            ${Case} 1
+                DetailPrint "Could not read from the environment"
+                ${Break}
+            ${Case} 2
+                DetailPrint "CMDER_ROOT variable does not exist... OK"
+                ${Break}
+        ${EndSwitch}
+
+
     SectionEnd
 
 
 ;--------------------------------
 ; Extra Functions
 
+    ; Init Function
     Function .onInit
         InitPluginsDir
-        File "/oname=$PluginsDir\spltmp.bmp" "img\cmder-splash.bmp"
+        File "/oname=$PLUGINSDIR\spltmp.bmp" "img\cmder-splash.bmp"
 
-        advsplash::show 1000 600 400 -1 $PluginsDir\spltmp
+        advsplash::show 1000 600 400 -1 $PLUGINSDIR\spltmp
 
-        Pop $0
+        Pop $0   
 
+    FunctionEnd
+
+
+    ; Get Latest Release using GitHub API
+    Function getLatestRelease
+        getjson:
+        ClearErrors
+        ; Get JSON from GH
+        DetailPrint "Fetching Latest Release from GitHub (${CMDER_LATEST})"
+        inetc::get ${CMDER_LATEST} ${TMP_GHJSON}
+        IfErrors errors
+
+        ; Parse JSON
+        DetailPrint "Parsing JSON..."
+        nsJSON::Set /file ${TMP_GHJSON}
         
+        ; Get Version
+        nsJSON::Get 'tag_name' /end
+        Pop $cmder_version
+        DetailPrint "Found version $cmder_version"
+
+        ; Get Download URL
+        nsJSON::Get /count 'assets' /end
+        Pop $R0
+
+        Var /GLOBAL i
+        ${ForEach} $i 0 $R0 + 1
+            nsJSON::Get 'assets' /index $i 'name' /end
+            Pop $R1
+            StrCmp $R1 "cmder_mini.zip" done 
+        ${Next}
+
+        done:
+        nsJSON::Get 'assets' /index $i 'browser_download_url' /end
+        DetailPrint "Got URL"
+        Pop $cmder_dl
+        Goto funcend
+
+        errors:
+            Pop $0
+            DetailPrint $0
+            MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "Could not retrieve JSON from GitHub" IDRETRY true IDCANCEL false
+            true:
+            Goto getjson  
+            false:
+            Abort "Installation Aborted."
+
+        funcend:
 
     FunctionEnd
 
-
-    Function wel_pre
-        messagebox MB_OK|MB_ICONEXCLAMATION|MB_TOPMOST|MB_SETFOREGROUND "NOTE: Please remember to run Cmder \
-        from the final installation page OR run as administrator the first time."
-    FunctionEnd
-
-
-    Function dir_pre
-        ; x64 Setup
-        ${If} ${RunningX64}
-            DetailPrint "Installer running on 64-bit host"
-
-            ; Disable registry redirection
-            SetRegView 64
-
-            ; Set Install Dir Root
-            StrCpy $INSTDIR "$PROGRAMFILES64\${APP_NAME}"
-        ${EndIf}
-    FunctionEnd
-
-    Function un.dir_pre
-        ; x64 Setup
-        ${If} ${RunningX64}
-            DetailPrint "Installer running on 64-bit host"
-
-            ; Disable registry redirection
-            SetRegView 64
-
-            ; Set Install Dir Root
-            StrCpy $INSTDIR "$PROGRAMFILES64\${APP_NAME}"
-        ${EndIf}
-    FunctionEnd
 
 
 ; END NSIS Script

@@ -34,27 +34,17 @@ const makensis = require('makensis');
 const axios = require('axios');
 const path = require('path');
 
-async function doBuild() {
-  try {
-    const response = await axios.get('https://api.github.com/repos/cmderdev/cmder/releases/latest');
-    await buildRelease(response.data.tag_name);
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-async function buildRelease(tag) {
+async function buildRelease() {
   let options = {
     verbose: 2,
     define: {
-        'CMDER_VERSION': tag,
         'INSTALLER_VERSION': VERSION
     }
   };
   
   console.log('Cmder Installer Version: ', VERSION);
   console.log('Found latest tag:', tag);
-  console.log('Building NSIS installer for Cmder', options.define.CMDER_VERSION);
+  console.log('Building NSIS installer for Cmder');
 
   try {
     let output = await makensis.compile(path.join(__dirname, 'cmder_inst.nsi'), options);
@@ -64,4 +54,4 @@ async function buildRelease(tag) {
   }
 }
 
-doBuild();
+buildRelease();
