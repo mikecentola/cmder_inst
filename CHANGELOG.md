@@ -5,6 +5,8 @@
 ### Fixes
 
 - Added missing `%` to nsi file
+- Added Zip macro to NSI file
+- Fixed NPM build script
 
 ### Other
 
@@ -12,6 +14,7 @@
 - Added markdownlint JSON file
 - Added CODE_OF_CONDUCT.md
 - Added SECURITY.md
+- Moved script file into scripts folder
 
 ## [v.0.1.0](https:github.com/mikecentola/cmder-inst/tree/v0.1.0) (2019-01-29)
 
