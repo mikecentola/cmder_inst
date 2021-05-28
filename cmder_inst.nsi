@@ -1,13 +1,13 @@
 ; NSIS Installer File for Cmder
-;   VERSION:        v0.1.0
+;   VERSION:        v0.1.1
 ;
 ;   Written by Mike Centola (http://github.com/mikecentola)
 ;
-;   Intended for NSIS 3.0
+;   Intended for NSIS 3.0+
 
 ; The MIT License (MIT)
 ;
-; Copyright (c) 2019 Mike Centola
+; Copyright (c) 2021 Mike Centola
 ;
 ; Permission is hereby granted, free of charge, to any person obtaining a copy
 ; of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,8 @@
 ; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 ; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 ; THE SOFTWARE.
+
+Unicode true
 
 ;--------------------------------
 ; Includes
@@ -50,12 +52,12 @@
 
     !ifndef INSTALLER_VERSION
       ; Not run with nodejs
-      !define INSTALLER_VERSION "v0.1.0"
+      !define INSTALLER_VERSION "v0.1.1"
     !endif
 
 
     !ifndef FILE_VERSION
-      !define FILE_VERSION "0.1.0.0"
+      !define FILE_VERSION "0.1.1.0"
     !endif
 
     !define CMDER_LATEST "https://api.github.com/repos/cmderdev/cmder/releases/latest"
@@ -159,7 +161,41 @@
 
 ;--------------------------------
 ; ZIP Handling
-    !include "ZipDLL.nsh"
+    ;!include "ZipDLL.nsh"
+
+    !ifndef ZIPDLL_USED
+
+    !define ZIPDLL_USED
+
+    !macro ZIPDLL_EXTRACT SOURCE DESTINATION FILE
+
+        !define "FILE_${FILE}"
+
+        !ifndef FILE_<ALL>
+            Push "${FILE}"
+        !endif
+
+        IfFileExists "${DESTINATION}" +2
+            CreateDirectory "${DESTINATION}"
+        
+        Push "${DESTINATION}"
+
+        IfFileExists "${SOURCE}" +2
+            SetErrors
+        
+        Push "${SOURCE}"
+
+        !ifdef FILE_<ALL>
+            ZipDLL::extractall
+        !else
+            ZipDLL::extractfile
+        !endif
+
+        !undef "FILE_${FILE}"
+
+    !macroend
+
+    !endif
 
 ;--------------------------------
 ; Installer Sections
