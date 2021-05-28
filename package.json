@@ -3,7 +3,14 @@
     "version": "0.1.1",
     "author": "Mike Centola",
     "description": "Cmder Installer",
-    "keywords": ["cmder","installer","nsis","conemu","nullsoft","windows"],
+    "keywords": [
+        "cmder",
+        "installer",
+        "nsis",
+        "conemu",
+        "nullsoft",
+        "windows"
+    ],
     "homepage": "https://github.com/mikecentola/cmder_inst",
     "bugs": "https://github.com/mikecentola/cmder_inst/issues",
     "license": "MIT",
@@ -12,10 +19,9 @@
         "url": "https://github.com/mikecentola/cmder_inst/issues"
     },
     "scripts": {
-        "build": "node build.js"
+        "build": "node scripts/build.js"
     },
     "dependencies": {
-        "axios": "^0.21.1",
         "makensis": "^0.23.4"
     }
 }
