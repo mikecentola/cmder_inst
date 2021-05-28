@@ -1,5 +1,18 @@
 # Change Log
 
+## [v.0.1.1](https:github.com/mikecentola/cmder-inst/tree/v0.1.1) (2021-05-28)
+
+### Fixes
+
+- Added missing `%` to nsi file
+
+### Other
+
+- Updated Readme
+- Added markdownlint JSON file
+- Added CODE_OF_CONDUCT.md
+- Added SECURITY.md
+
 ## [v.0.1.0](https:github.com/mikecentola/cmder-inst/tree/v0.1.0) (2019-01-29)
 
 This is the first major release that I believe is ready for *production*. Tested on my Windows 10 system. Uses GitHub API to fetch the latest version of Cmder.
